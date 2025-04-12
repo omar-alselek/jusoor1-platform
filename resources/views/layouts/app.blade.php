@@ -48,6 +48,16 @@
     
     <!-- Alpine.js for interactive components -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Pusher for real-time messaging -->
+    <script src="https://js.pusher.com/8.0/pusher.min.js"></script>
+    
+    @auth
+    <!-- Auth user data for chat system -->
+    <input type="hidden" id="auth-user-id" value="{{ auth()->id() }}">
+    <input type="hidden" id="pusher-key" value="{{ config('broadcasting.connections.pusher.key') }}">
+    <input type="hidden" id="pusher-cluster" value="{{ config('broadcasting.connections.pusher.options.cluster') }}">
+    @endauth
 </head>
 <body class="font-sans antialiased bg-gray-50 text-gray-900">
     <div class="min-h-screen flex flex-col">
@@ -100,6 +110,12 @@
         });
     </script>
     
+    @auth
+    <!-- Chat notification system -->
+    <script src="{{ asset('js/chat-notifications.js') }}"></script>
+    @endauth
+    
+    @stack('scripts')
     @yield('scripts')
 </body>
-</html> 
+</html>

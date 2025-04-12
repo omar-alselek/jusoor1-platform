@@ -70,6 +70,13 @@ Route::middleware(['auth'])->group(function () {
     // تغيير كلمة المرور
     Route::post('/password/update', [ProfileController::class, 'updatePassword'])->name('password.update');
     
+    // Chat routes
+    Route::get('/chat', [App\Http\Controllers\MessageController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{user}', [App\Http\Controllers\MessageController::class, 'show'])->name('chat.show');
+    Route::post('/messages/send', [App\Http\Controllers\MessageController::class, 'sendMessage'])->name('messages.send');
+    Route::get('/messages/unread-count', [App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.unread-count');
+    Route::post('/messages/{messageId}/read', [App\Http\Controllers\MessageController::class, 'markAsRead'])->name('messages.read');
+    
     // Donation routes
     Route::resource('donations', DonationController::class);
     

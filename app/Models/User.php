@@ -170,4 +170,36 @@ class User extends Authenticatable
     {
         return $this->hasMany(Volunteer::class);
     }
+    
+    /**
+     * Get the messages sent by the user.
+     */
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+    
+    /**
+     * Get the messages received by the user.
+     */
+    public function receivedMessages()
+    {
+        return $this->hasMany(Message::class, 'receiver_id');
+    }
+    
+    /**
+     * Get the unread messages for the user.
+     */
+    public function unreadMessages()
+    {
+        return $this->receivedMessages()->where('is_read', false);
+    }
+    
+    /**
+     * Get the conversations where the user is a participant.
+     */
+    public function conversations()
+    {
+        return $this->hasMany(Conversation::class, 'user_id');
+    }
 }

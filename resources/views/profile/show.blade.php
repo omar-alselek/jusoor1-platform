@@ -29,6 +29,15 @@
                             <div class="mt-4">
                                 <a href="{{ route('profile.edit', $user->id) }}" class="inline-block bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 transition">Edit Profile</a>
                             </div>
+                        @else
+                            <div class="mt-4">
+                                <a href="{{ route('chat.show', $user->id) }}" class="inline-flex items-center bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                    </svg>
+                                    Message
+                                </a>
+                            </div>
                         @endif
                     </div>
                     
@@ -162,13 +171,13 @@
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path>
                                         </svg>
-                                        <span>{{ $post->likes ? $post->likes->count() : 0 }} {{ Str::plural('Like', $post->likes ? $post->likes->count() : 0) }}</span>
+                                        <span>{{ $post->likes ? $post->likes->count() : 0 }} {{ ($post->likes ? $post->likes->count() : 0) == 1 ? 'Like' : 'Likes' }}</span>
                                     </div>
                                     <div class="flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M18 13V5a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2h3l3 3 3-3h3a2 2 0 002-2zM5 7a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm1 3a1 1 0 100 2h3a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                                            <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd"></path>
                                         </svg>
-                                        <span>{{ $post->comments ? $post->comments->count() : 0 }} {{ Str::plural('Comment', $post->comments ? $post->comments->count() : 0) }}</span>
+                                        <span>{{ $post->comments ? $post->comments->count() : 0 }} {{ ($post->comments ? $post->comments->count() : 0) == 1 ? 'Comment' : 'Comments' }}</span>
                                     </div>
                                     <div class="ml-auto">
                                         <a href="{{ route('social.posts.show', $post) }}" class="text-teal-600 hover:text-teal-800 font-medium">View Post</a>

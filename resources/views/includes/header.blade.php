@@ -33,6 +33,24 @@
             <!-- Auth Links -->
             <div class="hidden sm:ml-6 sm:flex sm:items-center">
                 @auth
+                    <!-- Chat Notification Icon -->
+                    <div class="ml-3 relative">
+                        <a href="{{ route('chat.index') }}" class="p-1 rounded-full text-gray-500 hover:text-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 relative">
+                            <span class="sr-only">View messages</span>
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                            <span id="notification-badge" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full {{ auth()->user()->unreadMessages()->count() > 0 ? '' : 'hidden' }}">
+                                <span id="unread-count">{{ auth()->user()->unreadMessages()->count() }}</span>
+                            </span>
+                        </a>
+                    </div>
+
+                    <!-- Hidden inputs for Pusher configuration -->
+                    <input type="hidden" id="auth-user-id" value="{{ auth()->id() }}">
+                    <input type="hidden" id="pusher-key" value="{{ config('broadcasting.connections.pusher.key') }}">
+                    <input type="hidden" id="pusher-cluster" value="{{ config('broadcasting.connections.pusher.options.cluster') }}">
+
                     <!-- Profile dropdown -->
                     <div class="ml-3 relative">
                         <div>
@@ -57,11 +75,11 @@
                             @if(auth()->user()->hasRole('admin'))
                                 <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Dashboard</a>
                             @endif
-                            <a href="{{ route('profile.show', Auth::id()) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Profile</a>
+                            <a href="{{ route('profile.show', auth()->id()) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Profile</a>
                             <a href="{{ route('social.feed') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Social Feed</a>
                             <form method="POST" action="{{ route('logout') }}" class="border-t border-gray-100 mt-1">
                                 @csrf
-                                <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium" role="menuitem">Sign out</button>
+                                <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-gray-100" role="menuitem">Sign out</button>
                             </form>
                         </div>
                     </div>
@@ -104,7 +122,7 @@
                             <img class="h-10 w-10 rounded-full object-cover border border-gray-200" src="{{ asset('storage/' . auth()->user()->profile->avatar) }}" alt="{{ auth()->user()->name }}">
                         @else
                             <div class="h-10 w-10 rounded-full bg-teal-600 flex items-center justify-center">
-                                <span class="text-white font-medium">{{ substr(auth()->user()->name, 0, 1) }}</span>
+                                <span class="text-white font-medium text-sm">{{ substr(auth()->user()->name, 0, 1) }}</span>
                             </div>
                         @endif
                     </div>
@@ -117,9 +135,9 @@
                     @if(auth()->user()->hasRole('admin'))
                         <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">Dashboard</a>
                     @endif
-                    <a href="{{ route('profile.show', Auth::id()) }}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">Profile</a>
+                    <a href="{{ route('profile.show', auth()->id()) }}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">Profile</a>
                     <a href="{{ route('social.feed') }}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">Social Feed</a>
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="{{ route('logout') }}" class="border-t border-gray-100 mt-1">
                         @csrf
                         <button type="submit" class="block w-full text-left px-4 py-2 text-base font-medium text-red-600 hover:text-red-800 hover:bg-gray-100">Sign out</button>
                     </form>
@@ -165,6 +183,16 @@
 
             <!-- Right Side Menu (Desktop) -->
             <div class="hidden md:flex md:items-center md:space-x-4">
+                <!-- Messages Button -->
+                <a href="{{ route('chat.index') }}" class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors duration-150">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                    </svg>
+                    @auth
+                        <x-notification-badge />
+                    @endauth
+                </a>
+
                 <!-- Create new post button -->
                 <a href="{{ route('social.posts.create') }}" class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors duration-150">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -178,11 +206,11 @@
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open" type="button" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-opacity duration-150">
                         <span class="sr-only">Open user menu</span>
-                        @if(Auth::user()->profile && Auth::user()->profile->avatar)
-                            <img class="h-9 w-9 rounded-full object-cover border border-gray-200" src="{{ asset('storage/'.Auth::user()->profile->avatar) }}" alt="{{ Auth::user()->name }}">
+                        @if(auth()->user()->profile && auth()->user()->profile->avatar)
+                            <img class="h-9 w-9 rounded-full object-cover border border-gray-200" src="{{ asset('storage/'.auth()->user()->profile->avatar) }}" alt="{{ auth()->user()->name }}">
                         @else
                             <div class="h-9 w-9 rounded-full bg-teal-600 flex items-center justify-center">
-                                <span class="text-white font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                                <span class="text-white font-medium">{{ substr(auth()->user()->name, 0, 1) }}</span>
                             </div>
                         @endif
                     </button>
@@ -191,11 +219,11 @@
                     <div x-show="open" @click.away="open = false" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50" style="display: none;">
                         <div class="py-1">
                             <div class="px-4 py-2 border-b border-gray-100">
-                                <p class="text-sm font-medium text-gray-700">{{ Auth::user()->name }}</p>
-                                <p class="text-xs text-gray-500 truncate">{{ Auth::user()->email }}</p>
+                                <p class="text-sm font-medium text-gray-700">{{ auth()->user()->name }}</p>
+                                <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</p>
                             </div>
 
-                            <a href="{{ route('profile.show', Auth::id()) }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <a href="{{ route('profile.show', auth()->id()) }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
@@ -243,21 +271,21 @@
             <div class="pt-4 pb-3 border-t border-gray-200">
                 <div class="flex items-center px-4">
                     <div class="flex-shrink-0">
-                        @if(Auth::user()->profile && Auth::user()->profile->avatar)
-                            <img class="h-10 w-10 rounded-full object-cover border border-gray-200" src="{{ asset('storage/'.Auth::user()->profile->avatar) }}" alt="{{ Auth::user()->name }}">
+                        @if(auth()->user()->profile && auth()->user()->profile->avatar)
+                            <img class="h-10 w-10 rounded-full object-cover border border-gray-200" src="{{ asset('storage/'.auth()->user()->profile->avatar) }}" alt="{{ auth()->user()->name }}">
                         @else
                             <div class="h-10 w-10 rounded-full bg-teal-600 flex items-center justify-center">
-                                <span class="text-white font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                                <span class="text-white font-medium">{{ substr(auth()->user()->name, 0, 1) }}</span>
                             </div>
                         @endif
                     </div>
                     <div class="ml-3">
-                        <div class="text-base font-medium text-gray-800">{{ Auth::user()->name }}</div>
-                        <div class="text-sm font-medium text-gray-500">{{ Auth::user()->email }}</div>
+                        <div class="text-base font-medium text-gray-800">{{ auth()->user()->name }}</div>
+                        <div class="text-sm font-medium text-gray-500">{{ auth()->user()->email }}</div>
                     </div>
                 </div>
                 <div class="mt-3 px-2 space-y-1">
-                    <a href="{{ route('profile.show', Auth::id()) }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-teal-600 hover:bg-gray-50">
+                    <a href="{{ route('profile.show', auth()->id()) }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-teal-600 hover:bg-gray-50">
                         <div class="flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
